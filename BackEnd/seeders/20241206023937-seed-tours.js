@@ -1,0 +1,138 @@
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkInsert('tours', [
+      {
+        id: 1,
+        image: "1.jpg",
+        sale_off: 10,
+        place: "Dubai",
+        title: "Cuba Sailing Adventure",
+        cost: "100",
+        region: "Africa",
+        description: "Embark on an unforgettable Cuba Sailing Adventure, where azure waters, unspoiled beaches, and vibrant Cuban culture converge to create a once-in-a-lifetime journey. This unique sailing experience takes you along the pristine coastlines and secluded island",
+        rating: 5.00,
+        reviews_count: 4,
+        arrive_day: new Date("2024-12-09T17:00:00.000Z"),
+        depart_day: new Date("2024-12-14T17:00:00.000Z"),
+        type: "Adventure",
+        group_size: 50,
+        language: "English",
+        thumbnails: JSON.stringify([
+          "https://media.gadventures.com/media-server/dynamic/admin/content_pages/sailing-cuba-social.jpg",
+          "https://boattheglobe.com/wp-content/uploads/2020/01/sail-in-cuba.jpg",
+          "https://asa.com/wordpress/wp-content/uploads/2019/06/news-2019-7-22-cuba-above-1024x573.jpg",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRG5QvDbwQD3O3EoHCA80ozYBrXqSFylX0qYg&s",
+          "https://images-api.intrepidgroup.travel/Intrepid/104708/8801691369502.jpg"
+        ]),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 2,
+        image: "2.jpg",
+        sale_off: null,
+        place: "Italy",
+        title: "Tour in New York",
+        cost: "20",
+        region: "Europe",
+        description: "Visit historic landmarks and enjoy Italian cuisine.",
+        rating: 5.00,
+        reviews_count: 0,
+        arrive_day: new Date("2024-12-11T17:00:00.000Z"),
+        depart_day: new Date("2024-12-15T17:00:00.000Z"),
+        type: "Romatic",
+        group_size: 40,
+        language: "Italian",
+        thumbnails: "[]",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 3,
+        image: "3.jpg",
+        sale_off: null,
+        place: "Maldivas",
+        title: "Discover Greece",
+        cost: "150 ",
+        region: "Asia",
+        description: "Enjoy the stunning beaches and clear waters.",
+        rating: 5.00,
+        reviews_count: 0,
+        arrive_day: null,
+        depart_day: null,
+        type: null,
+        group_size: null,
+        language: null,
+        thumbnails: "[]",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 4,
+        image: "4.jpg",
+        sale_off: null,
+        place: "USA",
+        title: "Museum of Modern Art",
+        cost: "200 ",
+        region: "North America",
+        description: "A journey through modern art and innovation.",
+        rating: 5.00,
+        reviews_count: 0,
+        arrive_day: null,
+        depart_day: null,
+        type: null,
+        group_size: null,
+        language: null,
+        thumbnails: "[]",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 5,
+        image: "5.jpg",
+        sale_off: null,
+        place: "Bali",
+        title: "Peek Mountain View",
+        cost: "58 ",
+        region: "Asia",
+        description: "Experience the serene beauty of Bali mountains.",
+        rating: 4.00,
+        reviews_count: 0,
+        arrive_day: null,
+        depart_day: null,
+        type: null,
+        group_size: null,
+        language: null,
+        thumbnails: "[]",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 6,
+        image: "6.jpg",
+        sale_off: 25,
+        place: "Bangkok",
+        title: "Hot Baloon Journey",
+        cost: "40 ",
+        region: "Asia",
+        description: "An unforgettable hot air balloon experience.",
+        rating: 4.00,
+        reviews_count: 0,
+        arrive_day: null,
+        depart_day: null,
+        type: null,
+        group_size: null,
+        language: null,
+        thumbnails: "[]",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]);
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('tours', null, {});
+  }
+};
