@@ -72,8 +72,7 @@ export default function Details() {
 
                 console.log(data);
                 setTourDetails(data);
-                const thumbnails = JSON.parse(data.thumbnails || "[]"); // Safely parse the JSON string
-                setImages(thumbnails);
+                setImages(Array.isArray(data.thumbnails) ? data.thumbnails : []);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -100,10 +99,6 @@ export default function Details() {
         const departDate = new Date(depart_day);
         duration = Math.ceil((departDate - arriveDate) / (1000 * 60 * 60 * 24)); // Difference in days
     }
-
-
-
-
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;

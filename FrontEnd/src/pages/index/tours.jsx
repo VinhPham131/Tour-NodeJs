@@ -133,7 +133,7 @@ export default function Tours() {
                                             <p className="flex items-center text-slate-400 font-medium mb-2">
                                                 <FiMapPin className="text-red-500 size-4 me-1" /> {item.place}
                                             </p>
-                                            <Link to={`/tour-detail-one/${item.id}`} className="text-lg font-medium hover:text-red-500 duration-500 ease-in-out">
+                                            <Link to={`/tour-details/${item.id}`} className="text-lg font-medium hover:text-red-500 duration-500 ease-in-out">
                                                 {item.title}
                                             </Link>
                                             <div className="flex items-center mt-2">

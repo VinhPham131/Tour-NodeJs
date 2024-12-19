@@ -7,6 +7,7 @@ import BackToHome from "../../components/back-to-home";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,45 +18,48 @@ export default function Login() {
     e.preventDefault();
 
     try {
-        const response = await fetch('http://localhost:3000/api/users/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
+      const response = await fetch('http://localhost:3000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, rememberMe }),
+      });
 
-        if (!response.ok) {
-            const data = await response.json();
-            if (data.message === "Invalid email or password.") {
-                setError("Invalid email or password.");
-            } else {
-                setError("An unexpected error occurred.");
-            }
-            return;
-        }
-
+      if (!response.ok) {
         const data = await response.json();
-        const tokenExpiry = 3600 * 1000; // Assuming 1 hour in milliseconds
+        if (data.message === "Invalid email or password.") {
+          setError("Invalid email or password.");
+        } else {
+          setError("An unexpected error occurred.");
+        }
+        return;
+      }
 
-        // Save token and user details
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('token', data.token);
+      const data = await response.json();
 
+      // Save token and user details
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
+
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
         // Auto logout when the token expires
         setTimeout(() => {
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            navigate('/login'); // Redirect to login
-            alert("Session expired. Please log in again.");
-        }, tokenExpiry);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          navigate('/login'); // Redirect to login
+          alert("Session expired. Please log in again.");
+        }, 3600 * 1000); // 1 hour in milliseconds
+      }
 
-        navigate(from);
+      navigate(from);
     } catch (error) {
-        setError('An unexpected error occurred.');
+      setError('An unexpected error occurred.');
     }
-};
-
+  };
 
   // Check token on component mount
   useEffect(() => {
@@ -101,6 +105,18 @@ export default function Login() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                      />
+                      <span className="ml-2">Remember Me</span>
+                    </label>
                   </div>
 
                   {error && (

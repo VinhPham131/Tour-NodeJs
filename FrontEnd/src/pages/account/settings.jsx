@@ -47,6 +47,16 @@ export default function Settings() {
     };
 
     const handleDeleteAccount = async () => {
+        if (deleteConfirm !== "DELETE") {
+            setError("Please type 'DELETE' to confirm.");
+            setMessage(null);
+            return;
+        }
+
+        if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
             const response = await fetch("http://localhost:3000/api/users/delete", {
@@ -62,7 +72,7 @@ export default function Settings() {
             }
 
             localStorage.removeItem("token");
-            navigate("/register");
+            navigate("/login");
         } catch (err) {
             setError(err.message);
             setMessage(null);
@@ -127,8 +137,8 @@ export default function Settings() {
                                         onClick={handleDeleteAccount}
                                         disabled={deleteConfirm !== "DELETE"}
                                         className={`${deleteConfirm === "DELETE"
-                                                ? "bg-red-500 text-white"
-                                                : "bg-gray-300 text-gray-500"
+                                            ? "bg-red-500 text-white"
+                                            : "bg-gray-300 text-gray-500"
                                             } py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center rounded-md`}
                                     >
                                         Delete Account

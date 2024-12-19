@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const path = require('path');
 
 
 
@@ -62,7 +63,7 @@ exports.createUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required.' });
@@ -80,7 +81,12 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    // Create a JWT token with all user data
+    // Token expiration logic based on rememberMe
+    const tokenOptions = rememberMe
+      ? {} // No expiration for "Remember Me"
+      : { expiresIn: '1h' }; // 1 hour expiration by default
+
+    // Create a JWT token
     const token = jwt.sign(
       {
         id: user.id,
@@ -91,18 +97,18 @@ exports.loginUser = async (req, res) => {
         description: user.description,
         phoneNumber: user.phoneNumber,
         avatar: user.avatar,
-        social: user.social, // Include the social field
+        social: user.social,
       },
       JWT_SECRET_KEY,
-      { expiresIn: '1h' }
+      tokenOptions
     );
 
     res.status(200).json({
       message: 'Login successful.',
-      user: { 
-        id: user.id, 
-        email: user.email, 
-        name: user.name, 
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
         role: user.role,
         occupation: user.occupation,
         description: user.description,
@@ -117,6 +123,7 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: 'Error logging in.', error: error.message });
   }
 };
+
 
 exports.logoutUser = (req, res) => {
   req.session.destroy((err) => {
@@ -137,14 +144,14 @@ exports.getAllUsers = async (req, res) => {
   }
 }
 
-exports.getUserProfile = async (req, res) => { 
+exports.getUserProfile = async (req, res) => {
   try {
     // Retrieve user ID from decoded JWT (from req.user, set by checkAuth middleware)
     const { id: userId } = req.user;
 
     // Find the user by the ID
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'email', 'role', 'name', 'occupation', 'description', 'phoneNumber', 'social']
+      attributes: ['id', 'email', 'role', 'name', 'occupation', 'description', 'phoneNumber', 'social', 'avatar'],
     });
 
     if (!user) {
@@ -163,6 +170,7 @@ exports.getUserProfile = async (req, res) => {
         description: user.description,
         phoneNumber: user.phoneNumber,
         social: user.social,
+        avatar: user.avatar,
       }
     });
   } catch (error) {
@@ -175,7 +183,7 @@ exports.getUserProfile = async (req, res) => {
 // Update user profile
 exports.updateUserProfile = async (req, res) => {
   const userId = req.user.id;
-  const { name, email, occupation, description, phoneNumber, social } =
+  const { name, email, occupation, description, phoneNumber, social, avatar } =
     req.body;
   try {
     const user = await User.findByPk(userId);
@@ -187,14 +195,15 @@ exports.updateUserProfile = async (req, res) => {
     user.description = description ?? user.description;
     user.phoneNumber = phoneNumber ?? user.phoneNumber;
     user.social = social ?? user.social;
+    user.avatar = avatar ?? user.avatar;
 
     await user.save();
 
     // Optionally refresh the token if relevant fields are updated
     const updatedToken = jwt.sign(
-      { 
-        id: user.id, 
-        email: user.email, 
+      {
+        id: user.id,
+        email: user.email,
         name: user.name,
         role: user.role,
         occupation: user.occupation,
@@ -256,5 +265,28 @@ exports.deleteAccount = async (req, res) => {
     res.status(200).json({ message: 'Account deleted successfully.' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete account.' });
+  }
+};
+
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const avatarPath = `/uploads/avatars/${req.file.filename}`;
+    user.avatar = avatarPath;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Avatar uploaded successfully.',
+      avatar: avatarPath,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to upload avatar.', error: error.message });
   }
 };

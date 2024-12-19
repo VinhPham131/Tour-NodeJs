@@ -29,7 +29,13 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/signup-success" element={<SignupSuccess />} />
+      <Route
+        path="/signup-success"
+        element={
+          <AuthWrapper>
+            <SignupSuccess />
+          </AuthWrapper>
+        } />
       <Route
         path="/profile"
         element={

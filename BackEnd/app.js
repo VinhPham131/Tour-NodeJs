@@ -4,15 +4,20 @@ const cors = require('cors');
 require('dotenv').config();
 const router = require('./routes/index');
 const session = require('express-session'); // Add express-session
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Middleware
 app.use(cors({
   origin: 'http://localhost:3001', // Your frontend URL
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 app.use(bodyParser.json());
 
 // Session middleware

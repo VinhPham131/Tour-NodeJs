@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
       Billing.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
-
   Billing.init({
     userId: {
       type: DataTypes.INTEGER,

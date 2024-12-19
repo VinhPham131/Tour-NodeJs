@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const checkAuth = require('../middlewares/authMiddleware'); // Import the correct path for your middleware
-
+const upload = require('../middlewares/uploadFile'); // Import the correct path for your middleware 
 const { 
     createUser, 
     loginUser,
@@ -10,7 +10,8 @@ const {
     getUserProfile,
     updateUserProfile,
     updatePassword, 
-    deleteAccount
+    deleteAccount,
+    uploadAvatar
 } = require('../controllers/user.controller');
 
 // Route for user logout
@@ -33,5 +34,7 @@ router.put('/update', checkAuth, updateUserProfile);
 router.put('/update-password', checkAuth, updatePassword);
 
 router.delete('/delete', checkAuth, deleteAccount);
+
+router.post('/upload-avatar', checkAuth, upload.single('avatar'), uploadAvatar);
 
 module.exports = router;

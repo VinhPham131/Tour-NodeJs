@@ -1,72 +1,83 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';  // useHistory for navigation after logout
+import { Link, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { useAvatar } from '../context/AvatarContext'; // Import AvatarContext
 
-import userImg from '../assets/images/person/16.png';
+import clientImg from "../assets/images/person/16.png";
+import clientImgBlack from "../assets/images/person/default-user-black.png";
+import { FiUser, FiSettings, FiLogOut, FiFileText, FiLogIn } from '../assets/icons/vander';
 
-import { FiUser, FiSettings, FiLogOut, FiFileText } from '../assets/icons/vander';
-
-export default function Navbar({ navclass, navlight, manuclass }) {
+export default function Navbar({ navclass, manuclass }) {
     const [scrolling, setScrolling] = useState(false);
     const [isToggle, setToggle] = useState(false);
-    const [manu, setManu] = useState('');
-    const [subManu, setSubManu] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userManu, setUserManu] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);  // Track user login state
     const dropdownRef = useRef(null);
     const userRef = useRef(null);
     const navigate = useNavigate();
+    const [error, setError] = useState(null);
+    const { avatar, setAvatar } = useAvatar(); // Sử dụng AvatarContext
+
+
+
+    const isTokenValid = (token) => {
+        try {
+            const decoded = jwtDecode(token);
+            const currentTime = Math.floor(Date.now() / 1000);
+            return decoded.exp > currentTime;
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return false;
+        }
+    };
+
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (!token || !isTokenValid(token)) {
+            handleLogout();
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/api/users/profile', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setAvatar(data.user.avatar || null);
+                setIsLoggedIn(true);
+            } else {
+                console.error('Failed to fetch user data.');
+                handleLogout();
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            handleLogout();
+        }
+    };
 
     useEffect(() => {
-        const handleScroll = () => {
-            const isScrolling = window.scrollY > 50;
-            setScrolling(isScrolling);
-        };
-
-        const handleOutsideClick = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-
-        const userOutsideClick = (e) => {
-            if (userRef.current && !userRef.current.contains(e.target)) {
-                setUserManu(false);
-            }
-        };
-
+        const handleScroll = () => setScrolling(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
-        window.addEventListener('click', handleOutsideClick);
-        window.addEventListener('click', userOutsideClick);
 
-        const current = window.location.pathname;
-        setManu(current);
-        setSubManu(current);
-        window.scrollTo(0, 0);
-
-        // Check if user is logged in by checking localStorage
-        const userData = localStorage.getItem('user');
-        setIsLoggedIn(userData ? true : false); // Set logged-in state based on user data
+        // Kiểm tra trạng thái đăng nhập và tải dữ liệu người dùng
+        fetchUser();
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('click', handleOutsideClick);
-            window.removeEventListener('click', userOutsideClick);
         };
     }, []);
 
-    const toggleMenu = () => {
-        setToggle(!isToggle);
-    };
-
     const handleLogout = () => {
-        // Make API call to log out (optional)
-        // For now, we'll clear localStorage and set login state to false
-        localStorage.removeItem('token');  // For localStorage
-        sessionStorage.removeItem('token');  // For sessionStorage
-        localStorage.removeItem('user');  // Clear user data from localStorage
-        setIsLoggedIn(false);  // Update login state
-        navigate('/login');  // Redirect to login page
+        localStorage.removeItem('token');
+        setAvatar(null); // Xóa avatar khỏi context
+        setIsLoggedIn(false);
+        navigate('/');
     };
 
     return (
@@ -75,27 +86,15 @@ export default function Navbar({ navclass, navlight, manuclass }) {
                 <Link className="logo" to="/">
                     <span className="inline-block dark:hidden text-red-600">Tripster</span>
                 </Link>
-
-                <div className="menu-extras">
-                    <div className="menu-item">
-                        <Link to="#" className={`navbar-toggle ${isToggle ? 'open' : ''}`} id="isToggle" onClick={toggleMenu}>
-                            <div className="lines">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-
                 <ul className="buy-button list-none mb-0 space-x-1">
-                    
-
-                    {/* User Dropdown */}
                     <li className="dropdown inline-block relative ps-0.5" ref={userRef}>
                         <button className="dropdown-toggle items-center" type="button" onClick={() => setUserManu(!userManu)}>
-                            <span className="size-6 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-md border border-white bg-white text-white">
-                                <img src={userImg} className="rounded-md" alt="" />
+                            <span className="w-[40px] h-[40px] inline-flex items-center justify-center tracking-wide align-middle duration-500 rounded-md shadow-lg">
+                                <img
+                                    src={avatar ? `http://localhost:3000${avatar}` : clientImgBlack}
+                                    className="rounded-full w-[30px] h-[30px] object-cover object-center"
+                                    alt="User Avatar"
+                                />
                             </span>
                         </button>
                         {userManu && (
@@ -126,11 +125,18 @@ export default function Navbar({ navclass, navlight, manuclass }) {
                                             </li>
                                         </>
                                     ) : (
-                                        <li>
-                                            <Link to="/login" className="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-red-500 dark:hover:text-white">
-                                                <FiLogOut className="size-4 me-2"></FiLogOut>Login
-                                            </Link>
-                                        </li>
+                                        <>
+                                            <li>
+                                                <Link to="/login" className="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-red-500 dark:hover:text-white">
+                                                    <FiLogIn className="size-4 me-2"></FiLogIn>Login
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/signup" className="flex items-center font-medium py-2 px-4 dark:text-white/70 hover:text-red-500 dark:hover:text-white">
+                                                    <FiLogIn className="size-4 me-2"></FiLogIn>Sign up
+                                                </Link>
+                                            </li>
+                                        </>
                                     )}
                                 </ul>
                             </div>
@@ -138,13 +144,12 @@ export default function Navbar({ navclass, navlight, manuclass }) {
                     </li>
                 </ul>
 
-                <div id="navigation" style={{ display: isToggle === true ? 'block' : 'none' }}>
+                <div id="navigation" style={{ display: isToggle ? 'block' : 'none' }}>
                     <ul className={`navigation-menu ${manuclass}`}>
-                        <li className={`${manu === '/' ? 'active' : ''}`}><Link to="/" className="sub-menu-item">Home</Link></li>
-                        <li className={`${manu === '/tours' ? 'active' : ''}`}><Link to="/tours" className="sub-menu-item">Tours</Link></li>
-                        <li className={`${manu === '/contact' ? 'active' : ''}`}><Link to="/contact" className="sub-menu-item">Contact Us</Link></li>
-                        <li className={`${manu === '/about-us' ? 'active' : ''}`}><Link to="/about-us" className="sub-menu-item">About Us</Link></li>
-
+                        <li><Link to="/" className="sub-menu-item">Home</Link></li>
+                        <li><Link to="/tours" className="sub-menu-item">Tours</Link></li>
+                        <li><Link to="/contact" className="sub-menu-item">Contact Us</Link></li>
+                        <li><Link to="/about-us" className="sub-menu-item">About Us</Link></li>
                     </ul>
                 </div>
             </div>
