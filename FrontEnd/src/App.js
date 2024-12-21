@@ -18,7 +18,7 @@ import PaymentSuccess from "./pages/payment/payment-success";
 import AboutUs from "./pages/index/about-us";
 import Invoice from "./pages/account/invoice";
 import Settings from "./pages/account/settings";
-
+import Dashboard from "./pages/admin/Dashboard";
 function App() {
   return (
     <Routes>
@@ -67,6 +67,12 @@ function App() {
           <AuthWrapper>
             <Settings />
           </AuthWrapper>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+            <Dashboard />
         }
       />
     </Routes>

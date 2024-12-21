@@ -23,7 +23,40 @@ exports.getToursById = async (req, res) => {
 
 exports.addTour = async (req, res) => {
   try {
-    const tour = await Tour.create(req.body);
+    const {
+      image,
+      sale_off,
+      place,
+      title,
+      cost,
+      region,
+      description,
+      rating,
+      reviews_count,
+      arrive_day,
+      depart_day,
+      type,
+      group_size,
+      language,
+    } = req.body;
+    const tour = await Tour.create(
+      {
+        image,
+        sale_off,
+        place,
+        title,
+        cost,
+        region,
+        description,
+        rating,
+        reviews_count,
+        arrive_day,
+        depart_day,
+        type,
+        group_size,
+        language,
+      }
+    );
     res.status(201).json({ message: 'Tour added successfully', id: tour.id });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -15,7 +15,7 @@ export default function AccountingTab() {
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const { avatar, setAvatar } = useAvatar(); // Lấy và cập nhật avatar từ context
+    const { avatar, setAvatar } = useAvatar();
     const current = window.location.pathname;
 
     const uploadAvatar = async (e) => {

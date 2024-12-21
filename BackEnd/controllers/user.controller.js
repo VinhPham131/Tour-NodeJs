@@ -14,7 +14,7 @@ const passwordValidation = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]
 // Email validation regex pattern (additional check for a valid email)
 const emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-exports.createUser = async (req, res) => {
+exports.createAccount = async (req, res) => {
   try {
     const { email, password, name, role } = req.body;
 
@@ -288,5 +288,98 @@ exports.uploadAvatar = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to upload avatar.', error: error.message });
+  }
+};
+
+//Admin delete user
+exports.deleteUser = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    await user.destroy();
+
+    res.status(200).json({ message: 'User deleted successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete user.' });
+  }
+};
+
+//Admin update user
+exports.updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const { name, email, role, occupation, description, phoneNumber, social, avatar } = req.body;
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+
+    user.name = name ?? user.name;
+    user.email = email ?? user.email;
+    user.role = role ?? user.role;
+    user.occupation = occupation ?? user.occupation;
+    user.description = description ?? user.description;
+    user.phoneNumber = phoneNumber ?? user.phoneNumber;
+    user.social = social ?? user.social;
+    user.avatar = avatar ?? user.avatar;
+
+    await user.save();
+
+    res.status(200).json({ message: 'User updated successfully.', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update user.' });
+  }
+}
+
+//Admin create user
+exports.createUser = async (req, res) => {
+  try {
+    const { email, password, name, role, occupation, description, phoneNumber, social, avatar } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
+    // Check for valid email format
+    if (!emailValidation.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address.' });
+    }
+
+    // Password validation
+    if (!passwordValidation.test(password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.',
+      });
+    }
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User already exists.' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the user
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      name: name || null,
+      role: role || 'user', // Default role is 'user'
+      occupation: occupation || null,
+      description: description || null,
+      phoneNumber: phoneNumber || null,
+      social: social || null,
+      avatar: avatar || null,
+    });
+
+    res.status(201).json({
+      message: 'User successfully registered.',
+      user: { id: newUser.id, email: newUser.email, name: newUser.name },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating user.', error: error.message });
   }
 };

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useAvatar } from '../context/AvatarContext'; // Import AvatarContext
 
-import clientImg from "../assets/images/person/16.png";
 import clientImgBlack from "../assets/images/person/default-user-black.png";
 import { FiUser, FiSettings, FiLogOut, FiFileText, FiLogIn } from '../assets/icons/vander';
 
@@ -65,7 +64,6 @@ export default function Navbar({ navclass, manuclass }) {
         const handleScroll = () => setScrolling(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
 
-        // Kiểm tra trạng thái đăng nhập và tải dữ liệu người dùng
         fetchUser();
 
         return () => {
@@ -74,10 +72,11 @@ export default function Navbar({ navclass, manuclass }) {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        setAvatar(null); // Xóa avatar khỏi context
+        setAvatar(null); 
         setIsLoggedIn(false);
-        navigate('/');
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+        localStorage.removeItem("user");
     };
 
     return (
