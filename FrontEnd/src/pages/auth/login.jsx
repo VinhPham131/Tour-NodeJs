@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-
 import logo from '../../assets/images/logo-icon.png';
 import BackToHome from "../../components/back-to-home";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -94,17 +95,29 @@ export default function Login() {
                     />
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-4 relative">
                     <label className="font-semibold" htmlFor="LoginPassword">Password:</label>
                     <input
                       id="LoginPassword"
-                      type="password"
+                      type={showPassword ? "text" : "password"} // Toggle between 'password' and 'text'
                       className="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0"
                       placeholder="Password:"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    {/* Eye Icon for toggling password visibility */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-[60px] transform -translate-y-1/2 text-gray-500"
+                    >
+                      {showPassword ? (
+                        <FiEye className="w-4 h-4" />
+                      ) : (
+                        <FiEyeOff className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
 
                   <div className="mb-4">
@@ -135,6 +148,7 @@ export default function Login() {
                   </div>
 
                   <div className="text-center">
+                    <p className="text-slate-400 mb-0"><Link to="/forgot-password" className="text-red-400">Forgot password ?</Link></p>
                     <span className="text-slate-400 me-2">Don't have an account?</span>
                     <Link to="/signup" className="text-black dark:text-white font-bold inline-block">Sign Up</Link>
                   </div>

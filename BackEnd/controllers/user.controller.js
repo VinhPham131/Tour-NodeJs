@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const path = require('path');
+const { sendEmail } = require('../services/emailService');
+const { forgotPasswordTemplate } = require('../utils/emailService');
 
 
 
@@ -83,7 +84,7 @@ exports.loginUser = async (req, res) => {
 
     // Token expiration logic based on rememberMe
     const tokenOptions = rememberMe
-      ? {} // No expiration for "Remember Me"
+      ? {expiresIn: '7d'} // No expiration for "Remember Me"
       : { expiresIn: '1h' }; // 1 hour expiration by default
 
     // Create a JWT token
@@ -381,5 +382,85 @@ exports.createUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating user.', error: error.message });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !emailValidation.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address.' });
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const resetToken = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET_KEY,
+      { expiresIn: '10m' }
+    );
+
+    const resetUrl = `http://localhost:3001/reset-password/${resetToken}`;
+    const emailContent = forgotPasswordTemplate(resetUrl, user.name || 'User');
+    await sendEmail(
+      user.email,
+      emailContent.subject,
+      emailContent.text,
+      emailContent.html
+    );
+
+    res.status(200).json({ message: 'Password reset email sent. Please check your inbox.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to send reset password email.' });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    console.log('New Password:', password);
+    console.log('Password Validation Result:', passwordValidation.test(password));
+
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required.' });
+    }
+
+    if (!password) {
+      return res.status(400).json({ message: 'Password is required.' });
+    }
+
+    if (!passwordValidation.test(password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.',
+      });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET_KEY);
+    } catch (err) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been reset successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to reset password.' });
   }
 };

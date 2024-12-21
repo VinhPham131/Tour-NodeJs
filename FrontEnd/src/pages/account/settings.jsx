@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import AccountingTab from "../../components/accounting-tab";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Settings() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -12,6 +13,11 @@ export default function Settings() {
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
 
     const handleChangePassword = async () => {
         if (newPassword !== confirmNewPassword) {
@@ -94,28 +100,72 @@ export default function Settings() {
                             <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900">
                                 <h5 className="text-2xl font-semibold mb-4">Settings</h5>
                                 <div className=" mb-14 ">
+                                    <div></div>
                                     <h3 className="text-lg font-semibold mb-4">Change Password</h3>
-                                    <input
-                                        type="password"
-                                        placeholder="Current Password"
-                                        className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
-                                        value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                    />
-                                    <input
-                                        type="password"
-                                        placeholder="New Password"
-                                        className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
-                                    <input
-                                        type="password"
-                                        placeholder="Confirm New Password"
-                                        className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
-                                        value={confirmNewPassword}
-                                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                    />
+                                    <div className="relative mb-6">
+                                        <input
+                                            type={showPassword ? "text" : "password"} // Toggle between 'password' and 'text'
+                                            placeholder="Current Password"
+                                            className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                        />
+                                        {/* Eye Icon for toggling password visibility */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-[200px] top-[20px] transform -translate-y-1/2 text-gray-500"
+                                        >
+                                            {showPassword ? (
+                                                <FiEye className="w-4 h-4" />
+                                            ) : (
+                                                <FiEyeOff className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="relative mb-6">
+                                        <input
+                                            type={showNewPassword ? "text" : "password"} // Toggle between 'password' and 'text'
+                                            placeholder="New Password"
+                                            className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                        {/* Eye Icon for toggling password visibility */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            className="absolute right-[200px] top-[20px] transform -translate-y-1/2 text-gray-500"
+                                        >
+                                            {showNewPassword ? (
+                                                <FiEye className="w-4 h-4" />
+                                            ) : (
+                                                <FiEyeOff className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    <div className="relative mb-6">
+                                        <input
+                                            type={showConfirmPassword ? "text" : "password"} // Toggle between 'password' and 'text'
+                                            placeholder="Confirm New Password"
+                                            className="block w-[500px] mb-6 px-4 py-2 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-800 focus:ring-0"
+                                            value={confirmNewPassword}
+                                            onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                        />
+                                        {/* Eye Icon for toggling password visibility */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-[200px] top-[20px] transform -translate-y-1/2 text-gray-500"
+                                        >
+                                            {showConfirmPassword ? (
+                                                <FiEye className="w-4 h-4" />
+                                            ) : (
+                                                <FiEyeOff className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
+
                                     <button
                                         onClick={handleChangePassword}
                                         className="py-2 px-5 inline-block font-semibold tracking-wide align-middle duration-500 text-base text-center bg-red-600 text-white rounded-md"

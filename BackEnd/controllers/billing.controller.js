@@ -1,10 +1,26 @@
 const { Billing, User } = require('../models'); // Import models
 
+const { billingThankYouTemplate } = require('../utils/emailService');
+const { sendEmail } = require('../services/emailService');
+
 exports.createBilling = async (req, res) => {
     try {
-        const { name, email, phone, address, paymentMethod, totalCost, tourTitle, tourPlace, arrivalDate, departureDate, children, adults } = req.body;
-        const userId = req.user.id; // Get user ID from token (checkAuth middleware)
+        const {
+            name,
+            email,
+            phone,
+            address,
+            paymentMethod,
+            totalCost,
+            tourTitle,
+            tourPlace,
+            arrivalDate,
+            departureDate,
+            children,
+            adults,
+        } = req.body;
 
+        const userId = req.user.id;
         // Create billing record
         const billing = await Billing.create({
             userId,
@@ -22,8 +38,13 @@ exports.createBilling = async (req, res) => {
             adults,
         });
 
+        // Gửi email cảm ơn
+        const { subject, text, html } = billingThankYouTemplate(billing);
+        console.log('Email data:', { email, subject, text, html });
+        await sendEmail(email, subject, text, html);
+
         res.status(201).json({
-            message: 'Billing created successfully',
+            message: 'Billing created successfully, thank you email sent.',
             billing,
         });
     } catch (error) {
@@ -31,6 +52,7 @@ exports.createBilling = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+
 
 exports.getAllBillings = async (req, res) => {
     try {

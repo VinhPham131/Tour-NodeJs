@@ -19,6 +19,8 @@ import AboutUs from "./pages/index/about-us";
 import Invoice from "./pages/account/invoice";
 import Settings from "./pages/account/settings";
 import Dashboard from "./pages/admin/Dashboard";
+import ForgotPassword from "./pages/auth/forgot-password";
+import ResetPassword from "./pages/auth/reset-password";
 function App() {
   return (
     <Routes>
@@ -75,6 +77,8 @@ function App() {
             <Dashboard />
         }
       />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
     </Routes>
   );
 }

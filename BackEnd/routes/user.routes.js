@@ -11,10 +11,16 @@ const {
     updateUserProfile,
     updatePassword, 
     deleteAccount,
-    uploadAvatar
+    uploadAvatar,
+    forgotPassword,
+    resetPassword
 } = require('../controllers/user.controller');
 
+// Route for user forgot password
+router.post('/forgot-password', forgotPassword);
 
+// Route for user reset password
+router.put('/reset-password/:token', resetPassword);
 
 // Route for user logout
 router.get('/logout', logoutUser);

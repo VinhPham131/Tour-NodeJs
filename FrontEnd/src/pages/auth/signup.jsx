@@ -4,37 +4,40 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo-icon.png";
 import BackToHome from "../../components/back-to-home";
 
+import { FiEye, FiEyeOff } from "react-icons/fi";
+
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-  
+
     // Client-side validation
     if (!acceptTerms) {
       setError("You must accept the terms and conditions.");
       return;
     }
-  
+
     // Email validation
     const emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailValidation.test(email)) {
       setError("Please provide a valid email address.");
       return;
     }
-  
+
     // Password validation (same as server-side)
     const passwordValidation = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordValidation.test(password)) {
       setError("Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.");
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:3000/api/users/register", {
         method: "POST",
@@ -43,13 +46,13 @@ export default function Signup() {
         },
         body: JSON.stringify({ name, email, password }),
       });
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         setError(`Error: ${errorText}`);
         return;
       }
-  
+
       const data = await response.json();
       // Handle successful signup (e.g., navigate to another page)
       navigate("/signup-success");
@@ -57,7 +60,7 @@ export default function Signup() {
       setError("An unexpected error occurred.");
     }
   };
-  
+
 
   return (
     <>
@@ -97,17 +100,29 @@ export default function Signup() {
                     />
                   </div>
 
-                  <div className="mb-4">
+                  <div className="mb-4 relative">
                     <label className="font-semibold" htmlFor="LoginPassword">Password:</label>
                     <input
                       id="LoginPassword"
-                      type="password"
+                      type={showPassword ? "text" : "password"} // Toggle between 'password' and 'text'
                       className="mt-3 w-full py-2 px-3 h-10 bg-transparent dark:bg-slate-900 dark:text-slate-200 rounded outline-none border border-gray-100 dark:border-gray-800 focus:ring-0"
                       placeholder="Password:"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    {/* Eye Icon for toggling password visibility */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-[60px] transform -translate-y-1/2 text-gray-500"
+                    >
+                      {showPassword ? (
+                        <FiEye className="w-4 h-4" />
+                      ) : (
+                        <FiEyeOff className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
 
                   <div className="mb-4">
