@@ -6,19 +6,27 @@ export default function UserManagement() {
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const token = localStorage.getItem("token"); 
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/users");
+            const response = await fetch("http://localhost:3000/api/users", {
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                },
+            });
+
             if (!response.ok) {
                 throw new Error("Failed to fetch users");
             }
+
             const data = await response.json();
             setUsers(data.users);
         } catch (error) {
             console.error("Error fetching users:", error);
         }
     };
+
 
     useEffect(() => {
         fetchUsers();
@@ -32,7 +40,7 @@ export default function UserManagement() {
                 response = await fetch(`http://localhost:3000/api/users/${userData.id}`, {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`, 
                     },
                     body: JSON.stringify(userData),
                 });
@@ -48,7 +56,7 @@ export default function UserManagement() {
                     },
                     body: JSON.stringify(userData),
                 });
-                
+
                 if (!response.ok) {
                     const data = await response.json();
                     if (data.message) {
@@ -71,6 +79,9 @@ export default function UserManagement() {
         try {
             const response = await fetch(`http://localhost:3000/api/users/${id}`, {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             if (!response.ok) {
                 throw new Error("Failed to delete user");

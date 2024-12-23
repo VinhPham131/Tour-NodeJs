@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkAuth = require('../middlewares/authMiddleware');
-
+const { checkAuth } = require('../middlewares/authMiddleware');
 // Protect the route
 const {
     createBilling,

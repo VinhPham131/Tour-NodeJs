@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from '../../assets/images/logo-icon.png';
 import BackToHome from "../../components/back-to-home";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { jwtDecode } from "jwt-decode";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -43,6 +44,20 @@ export default function Login() {
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('token', data.token);
 
+      // Redirect user based on role
+      const decodedToken = jwtDecode(data.token);
+      const userRole = decodedToken.role;
+      console.log("Role:", userRole);
+      if (userRole === "admin") {
+        navigate("/admin");
+        console.log("Admin authorized");
+      } else if (userRole === "user") {
+        navigate(from);
+      } else {
+        navigate("/404");
+      }
+
+      // Save rememberMe preference
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       } else {
@@ -56,7 +71,7 @@ export default function Login() {
         }, 3600 * 1000); // 1 hour in milliseconds
       }
 
-      navigate(from);
+
     } catch (error) {
       setError('An unexpected error occurred.');
     }

@@ -21,7 +21,10 @@ import Settings from "./pages/account/settings";
 import Dashboard from "./pages/admin/Dashboard";
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
+import Error from "./pages/special/404";
+import { Navigate } from "react-router-dom";
 function App() {
+
   return (
     <Routes>
 
@@ -31,24 +34,25 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/404" element={<Error />} />
       <Route
         path="/signup-success"
         element={
-          <AuthWrapper>
+          <AuthWrapper allowedRoles={['user']}>
             <SignupSuccess />
           </AuthWrapper>
         } />
       <Route
         path="/profile"
         element={
-          <AuthWrapper>
+          <AuthWrapper allowedRoles={['user']}>
             <Profile />
           </AuthWrapper>
         } />
       <Route
         path="/payment"
         element={
-          <AuthWrapper>
+          <AuthWrapper allowedRoles={['user']}>
             <Payment />
           </AuthWrapper>
         }
@@ -58,7 +62,7 @@ function App() {
       <Route
         path="/invoice"
         element={
-          <AuthWrapper>
+          <AuthWrapper allowedRoles={['user']}>
             <Invoice />
           </AuthWrapper>
         }
@@ -66,7 +70,7 @@ function App() {
       <Route
         path="/setting"
         element={
-          <AuthWrapper>
+          <AuthWrapper allowedRoles={['user']}>
             <Settings />
           </AuthWrapper>
         }
@@ -74,11 +78,14 @@ function App() {
       <Route
         path="/admin"
         element={
+          <AuthWrapper allowedRoles={['admin']}>
             <Dashboard />
+          </AuthWrapper>
         }
       />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );
 }
