@@ -60,7 +60,7 @@ exports.getAllBillings = async (req, res) => {
             
             include: {
                 model: User,
-                attributes: ['id', 'email'],
+                attributes: ['id', 'email', 'name'],
             },
         });
 
@@ -83,7 +83,7 @@ exports.getBillingByUser = async (req, res) => {
             },
             include: {
                 model: User,
-                attributes: ['id', 'email'],
+                attributes: ['id', 'email', 'name'],
             },
         });
 
