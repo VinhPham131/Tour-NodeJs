@@ -35,12 +35,15 @@ export default function UserManagement() {
     const handleSave = async (userData) => {
         try {
             let response;
+            console.log("User data to save:", userData);
             if (userData.id) {
                 // Edit user
                 response = await fetch(`http://localhost:3000/api/users/${userData.id}`, {
                     method: "PUT",
                     headers: {
                         Authorization: `Bearer ${token}`, 
+                        "Content-Type": "application/json"
+
                     },
                     body: JSON.stringify(userData),
                 });
@@ -48,10 +51,12 @@ export default function UserManagement() {
 
                 alert("User updated successfully.");
                 setUsers(users.map((u) => (u.id === userData.id ? { ...u, ...userData } : u)));
+                console.log("User updated:", userData);
             } else {
                 response = await fetch("http://localhost:3000/api/users", {
                     method: "POST",
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(userData),

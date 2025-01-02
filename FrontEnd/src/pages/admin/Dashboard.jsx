@@ -17,7 +17,6 @@ export default function Dashboard(){
       <div className="flex-1 p-8">
         {selectedPage === "users" && <UsersManagement />}
         {selectedPage === "tours" && <ToursManagement />}
-        {selectedPage === "bookings" && <BookingsManagement />}
       </div>
     </div>
   );
