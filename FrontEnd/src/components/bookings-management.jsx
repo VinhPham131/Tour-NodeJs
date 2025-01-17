@@ -35,7 +35,7 @@ export default function BookingManagement() {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Billing Management</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Bookings Management</h2>
             {error && <p className="text-red-500">{error}</p>}
             <div className="space-y-8">
                 {Object.entries(groupedBillings).map(([userKey, userBillings]) => (

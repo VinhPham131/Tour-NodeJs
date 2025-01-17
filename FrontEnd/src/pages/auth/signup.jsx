@@ -71,7 +71,7 @@ export default function Signup() {
           <div className="flex justify-center">
             <div className="max-w-[400px] w-full m-auto p-6 bg-white dark:bg-slate-900 shadow-md dark:shadow-gray-700 rounded-md">
               <Link to="/"><img src={logo} className="mx-auto" alt="Logo" /></Link>
-              <h5 className="my-6 text-xl font-semibold text-center">Signup</h5>
+              <h5 className="my-6 text-xl font-semibold text-center">Sign Up</h5>
               <form className="text-start" onSubmit={handleSignup}>
                 <div className="grid grid-cols-1">
                   <div className="mb-4">

@@ -13,10 +13,6 @@ import 'tiny-slider/dist/tiny-slider.css';
 import "react-18-image-lightbox/style.css"
 
 import vinh from '../../assets/images/person/vinh.png'
-import kngu from '../../assets/images/person/kngu.png'
-import viet from '../../assets/images/person/viet.png'
-import thinh from '../../assets/images/person/thinh.png'
-import nhan from '../../assets/images/person/nhan.png'
 
 
 export default function AboutUs() {
@@ -25,26 +21,6 @@ export default function AboutUs() {
             image: vinh,
             name: 'Vinh Pham',
             possition: 'Leader'
-        },
-        {
-            image: nhan,
-            name: 'Minh Nhan',
-            possition: 'Member'
-        },
-        {
-            image: thinh,
-            name: 'Phuoc Thinh',
-            possition: 'Member'
-        },
-        {
-            image: viet,
-            name: 'Dang Viet',
-            possition: 'Member'
-        },
-        {
-            image: kngu,
-            name: 'Khanh Nguyen',
-            possition: 'Member'
         },
     ];
 
